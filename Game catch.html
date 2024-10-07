@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Catch the Coin Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a1a;
+            overflow: hidden;
+            color: white;
+            height: 100vh;
+        }
+
+        /* Menu Styles */
+        #menu {
+            position: fixed;
+            top: 10px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        #menu a {
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 24px;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        #menu a:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* Game Area */
+        #gameArea {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #282c34;
+            overflow: hidden;
+        }
+
+        /* Basket */
+        #basket {
+            width: 80px;
+            height: 40px;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ffd700;
+            border-radius: 10px;
+            transition: left 0.05s ease-out, width 0.3s, height 0.3s;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Coin */
+        .coin {
+            width: 40px;
+            height: 40px;
+            background-color: #FFD700;
+            position: absolute;
+            border-radius: 50%;
+            top: -50px;
+            animation: fall linear infinite, rotate 1s linear infinite;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        @keyframes fall {
+            0% { top: -50px; }
+            100% { top: 100vh; }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Particle Effect */
+        .sparkle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,215,0,0) 70%);
+            border-radius: 50%;
+            animation: sparkle 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes sparkle {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(2); }
+        }
+
+        /* Score */
+        #score {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #ffd700;
+            z-index: 1000;
+        }
+
+        /* Start Button */
+        #startBtn, .mode-btn, .shop-btn {
+            padding: 10px 20px;
+            background-color: #4a0e78;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #startBtn:hover, .mode-btn:hover, .shop-btn:hover {
+            background-color: #5e1794;
+            transform: scale(1.05);
+        }
+
+        /* Game Over */
+        #gameOver {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+
+        /* Neon Text Effect */
+        #gameOver.neon {
+            animation: neonGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonGlow {
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 215, 0, 0.7); }
+        }
+
+        /* Menu Container */
+        #menuContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        /* Shop */
+        #shop {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 2000;
+        }
+
+        .upgrade-btn {
+            padding: 5px 10px;
+            margin: 5px;
+            background-color: #4a0e78;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menu Section -->
+    <div id="menu">
+        <a href="index.html">🏠</a>
+    </div>
+
+    <!-- Game Area -->
+    <div id="gameArea">
+        <div id="basket"></div>
+        <div id="score">Score: 0</div>
+        <div id="gameOver">Game Over</div>
+    </div>
+
+    <!-- Menu Container -->
+    <div id="menuContainer">
+        <button id="startBtn">Start Game</button>
+        <button class="mode-btn" data-mode="timed">Timed Mode</button>
+        <button class="mode-btn" data-mode="infinite">Infinite Mode</button>
+        <button class="shop-btn">Shop</button>
+    </div>
+
+    <!-- Shop -->
+    <div id="shop">
+        <h2>Shop</h2>
+        <button class="upgrade-btn" data-upgrade="size">Upgrade Size (100 coins)</button>
+        <button class="upgrade-btn" data-upgrade="speed">Upgrade Speed (150 coins)</button>
+        <button class="upgrade-btn" id="closeShop">Close Shop</button>
+    </div>
+
+    <script>
+        let basket = document.getElementById('basket');
+        let scoreDisplay = document.getElementById('score');
+        let gameOverDisplay = document.getElementById('gameOver');
+        let startBtn = document.getElementById('startBtn');
+        let menuContainer = document.getElementById('menuContainer');
+        let shop = document.getElementById('shop');
+        let score = 0;
+        let gameInterval;
+        let coinInterval;
+        let basketSpeed = 30;
+        let movingLeft = false;
+        let movingRight = false;
+        let gameMode = 'timed';
+        let basketSize = 80;
+        let coinSize = 40;
+
+        function startGame() {
+            score = 0;
+            scoreDisplay.textContent = "Score: " + score;
+            gameOverDisplay.style.display = "none";
+            menuContainer.style.display = "none";
+            
+            document.addEventListener('keydown', keyDownHandler);
+            document.addEventListener('keyup', keyUpHandler);
+
+            coinInterval = setInterval(createCoin, 800);
+
+            if (gameMode === 'timed') {
+                gameInterval = setTimeout(endGame, 30000);
+            }
+
+            requestAnimationFrame(moveBasket);
+        }
+
+        function keyDownHandler(e) {
+            if (e.key === "ArrowLeft") {
+                movingLeft = true;
+            } else if (e.key === "ArrowRight") {
+                movingRight = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key === "ArrowLeft") {
+                movingLeft = false;
+            } else if (e.key === "ArrowRight") {
+                movingRight = false;
+            }
+        }
+
+        function moveBasket() {
+            let basketPosition = basket.offsetLeft;
+
+            if (movingLeft && basketPosition > 0) {
+                basket.style.left = basketPosition - basketSpeed + "px";
+            }
+            if (movingRight && basketPosition < (window.innerWidth - basketSize)) {
+                basket.style.left = basketPosition + basketSpeed + "px";
+            }
+
+            requestAnimationFrame(moveBasket);
+        }
+
+        function createCoin() {
+            let coin = document.createElement('div');
+            coin.classList.add('coin');
+            coin.style.left = Math.random() * (window.innerWidth - coinSize) + 'px';
+            coin.style.width = coinSize + 'px';
+            coin.style.height = coinSize + 'px';
+            document.body.appendChild(coin);
+
+            let fallDuration = Math.random() * 2 + 1;
+            coin.style.animationDuration = fallDuration + 's, 1s';
+
+            let coinFall = setInterval(() => {
+                let coinTop = coin.getBoundingClientRect().top;
+                let basketRect = basket.getBoundingClientRect();
+                let coinRect = coin.getBoundingClientRect();
+
+                if (
+                    coinTop + coinSize >= basketRect.top &&
+                    coinRect.left < basketRect.right &&
+                    coinRect.right > basketRect.left
+                ) {
+                    score += 10;
+                    scoreDisplay.textContent = "Score: " + score;
+                    createSparkle(coinRect.left + coinSize/2, coinRect.top + coinSize/2);
+                    coin.remove();
+                    clearInterval(coinFall);
+                }
+
+                if (coinTop > window.innerHeight) {
+                    coin.remove();
+                    clearInterval(coinFall);
+                }
+            }, 20);
+        }
+
+        function createSparkle(x, y) {
+            let sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            document.body.appendChild(sparkle);
+
+            setTimeout(() => {
+                sparkle.remove();
+            }, 1000);
+        }
+
+        function endGame() {
+            document.removeEventListener('keydown', keyDownHandler);
+            document.removeEventListener('keyup', keyUpHandler);
+            clearInterval(coinInterval);
+            if (gameMode === 'timed') {
+                clearTimeout(gameInterval);
+            }
+            gameOverDisplay.style.display = 'block';
+            gameOverDisplay.classList.add('neon');
+            menuContainer.style.display = 'block';
+
+            let coins = document.querySelectorAll('.coin');
+            coins.forEach(coin => coin.remove());
+        }
+
+        startBtn.addEventListener('click', startGame);
+
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                gameMode = this.dataset.mode;
+                startGame();
+            });
+        });
+
+        document.querySelector('.shop-btn').addEventListener('click', function() {
+            shop.style.display = 'block';
+        });
+
+        document.getElementById('closeShop').addEventListener('click', function() {
+            shop.style.display = 'none';
+        });
+
+        document.querySelectorAll('.upgrade-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                let upgrade = this.dataset.upgrade;
+                let cost = upgrade === 'size' ? 100 : 150;
+
+                if (score >= cost) {
+                    score -= cost;
+                    scoreDisplay.textContent = "Score: " + score;
+
+                    if (upgrade === 'size') {
+                        basketSize += 20;
+                        basket.style.width = basketSize + 'px';
+                    } else if (upgrade === 'speed') {
+                        basketSpeed += 5;
+                    }
+                } else {
+                    alert("Not enough coins!");
+                }
+            });
+        });
+
+        window.onload = function() {
+            menuContainer.style.display = 'block';
+        };
+    </script>
+</body>
+</html>
