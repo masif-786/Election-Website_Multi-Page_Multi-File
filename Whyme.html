@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Choose Talha for TSA Treasurer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #ffd700;
+            --secondary-color: #4a0e78;
+            --text-color: #ffffff;
+            --bg-color: #0a0a1a;
+            --accent-color: #ff4500;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(10, 10, 26, 0.8);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(10, 10, 26, 0.95);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            text-shadow: 0 0 15px rgba(255, 69, 0, 0.7);
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(45deg, var(--bg-color), var(--secondary-color), var(--accent-color));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: titleGlow 2s infinite alternate;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            100% { text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.5); }
+        }
+
+        .rotating-question-mark {
+            font-size: 20rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            animation: rotate 20s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .why-me-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 60px;
+        }
+
+        .why-me-text {
+            flex: 1;
+            padding-right: 50px;
+        }
+
+        .why-me-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .why-me-text p.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .why-me-name-box {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-left: 50px;
+            perspective: 1000px;
+        }
+
+        .why-me-name-box img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .why-me-name-box:hover img {
+            transform: rotateY(180deg);
+        }
+
+        .why-me-name-box::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .why-me-name-box:hover::before {
+            top: -10px;
+            left: -10px;
+            right: 10px;
+            bottom: 10px;
+        }
+
+        .awards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 40px;
+        }
+
+        .award-section {
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .award-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .award-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .award-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: calc(33% - 20px);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(50px);
+            opacity: 0;
+        }
+
+        .award-card.animate {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .award-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .award-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .award-card:hover::before {
+            top: -100%;
+            left: -100%;
+        }
+
+        .award-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .award-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 60px auto 0;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--primary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.5s ease;
+        }
+
+        .timeline-item.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: var(--bg-color);
+            border: 4px solid var(--primary-color);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            left: 50%;
+        }
+
+        .left::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            right: 30px;
+            border: medium solid var(--primary-color);
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent var(--primary-color);
+        }
+
+        .right::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            left: 30px;
+            border: medium solid var(--primary-color);
+            border-width: 10px 10px 10px 0;
+            border-color: transparent var(--primary-color) transparent transparent;
+        }
+
+        .right::after {
+            left: -16px;
+        }
+
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            position: relative;
+            border-radius: 6px;
+        }
+
+        .timeline-future {
+            text-align: center;
+            padding: 40px;
+            background-color: rgba(255, 215, 0, 0.1);
+            border-radius: 6px;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .timeline-future.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-future:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .timeline-future h3 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .timeline-future p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .timeline-future::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .timeline-future:hover::before {
+            top: -100%;
+            left: -100%;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        @media screen and (max-width: 768px) {
+            .why-me-content {
+                flex-direction: column;
+            }
+
+            .why-me-text {
+                padding-right: 0;
+                margin-bottom: 30px;
+            }
+
+            .why-me-name-box {
+                margin-left: 0;
+                margin-top: 30px;
+            }
+            
+            .award-card {
+                width: calc(50% - 20px);
+            }
+
+            .timeline::after {
+                left: 31px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+
+            .timeline-item::before {
+                left: 60px;
+                border: medium solid var(--primary-color);
+                border-width: 10px 10px 10px 0;
+                border-color: transparent var(--primary-color) transparent transparent;
+            }
+
+            .left::after, .right::after {
+                left: 15px;
+            }
+
+            .right {
+                left: 0%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">Talha</a>
+                <ul class="nav-links">
+                    <li><a href="Why-me.html">Why Me</a></li>
+                    <li><a href="goals.html">Goals</a></li>
+                    <li><a href="game.html">Stock Sim</a></li>
+                    <li><a href="Gametrivia.html">Trivia</a></li>
+                    <li><a href="Gamecatch.html">Coin Catch</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="rotating-question-mark">❓</div>
+            <h1>Why Choose Talha?</h1>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <div class="why-me-content">
+                    <div class="why-me-text">
+                        <p>As a dedicated and visionary leader with a passion for technology and financial management, I bring a unique blend of skills to the role of TSA Treasurer. My experience in budgeting, resource allocation, and fundraising makes me the ideal candidate to drive our chapter forward.</p>
+                        <p>With a strong background in both technology and finance, I am uniquely positioned to ensure that we have the resources and support needed to excel in all our endeavors. My significant experience in trading stocks and options provides me with substantial financial knowledge and skills that will be invaluable in managing our chapter's finances.</p>
+                        <p>Choose Talha for a future of financial stability and technological advancement!</p>
+                    </div>
+                    <div class="why-me-name-box">
+                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ffd700'/><text x='50' y='50' font-family='Arial' font-size='35' text-anchor='middle' dominant-baseline='central' fill='%23000000'>Talha</text></svg>" alt="Talha">
+                    </div>
+                </div>
+
+                <h2 class="section-title">Awards & Achievements</h2>
+                <div class="awards">
+                    <div class="award-section">
+                        <h3>TSA Awards</h3>
+                        <div class="award-cards">
+                            <div class="award-card">
+                                <div class="award-icon">🏆</div>
+                                <h3 class="award-title">Video Game Design</h3>
+                                <p>Top 3 (x2)</p>
+                            </div>
+                            <div class="award-card">
+                                <div class="award-icon">🖥️</div>
+                                <h3 class="award-title">Website Design</h3>
+                                <p>Top 3 (x2)</p>
+                            </div>
+                            <div class="award-card">
+                                <div class="award-icon">🎛️</div>
+                                <h3 class="award-title">Microcontroller Design</h3>
+                                <p>Top 3</p>
+                            </div>
+                            <div class="award-card">
+                                <div class="award-icon">🔧</div>
+                                <h3 class="award-title">System Control Technology</h3>
+                                <p>Top 3</p>
+                            </div>
+                            <div class="award-card">
+                                <div class="award-icon">🗣️</div>
+                                <h3 class="award-title">Debating Technological Issues</h3>
+                                <p>Top 3</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="award-section">
+                        <h3>Other Finance Awards</h3>
+                        <div class="award-cards">
+                            <div class="award-card">
+                                <div class="award-icon">📊</div>
+                                <h3 class="award-title">Wharton Global Investment Competition</h3>
+                                <p>Top 15 Team</p>
+                            </div>
+                            <div class="award-card">
+                                <div class="award-icon">💼</div>
+                                <h3 class="award-title">National Personal Finance Challenge</h3>
+                                <p>State Finalist</p>
+                            </div>
+                            <div class="award-card">
+                                <div class="award-icon">📈</div>
+                                <h3 class="award-title">Dartmouth Investment and Finance</h3>
+                                <p>Top 3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Experience Timeline</h2>
+                <div class="timeline">
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <h2>2022-2023 School Year</h2>
+                            <p>TSA Chapter Officer, gaining leadership experience and contributing to chapter success</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <h2>Summer 2022-2023</h2>
+                            <p>PSU Operations Management Program, enhancing organizational and management skills</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <h2>Summer 2022-2023</h2>
+                            <p>Dartmouth Data Analytics and O&Q Management Program, developing analytical and strategic thinking</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <h2>2023-2024 School Year</h2>
+                            <p>Continued involvement in TSA, taking on more responsibilities and competing in various events</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <h2>Summer 2023-2024</h2>
+                            <p>TU Finance and Investment Program, gaining in-depth knowledge of financial management and investment strategies</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-future">
+                    <h3>The Future with Talha as Treasurer</h3>
+                    <p>Innovative financial strategies to boost our chapter's resources</p>
+                    <p>Implementing cutting-edge technology for efficient fund management</p>
+                    <p>Fostering partnerships to create new opportunities for our members</p>
+                    <p>Driving our chapter towards unprecedented success and growth!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="particles-js"></div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS.load('particles-js', 'particles.json', function() {
+            console.log('particles.js loaded');
+        });
+
+        window.addEventListener('scroll', function() {
+            var header = document.querySelector('header');
+            header.classList.toggle('scrolled', window.scrollY > 0);
+        });
+
+        // Animate elements on scroll
+        const animateOnScroll = (entries, observer) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(animateOnScroll, {
+            root: null,
+            threshold: 0.1,
+        });
+
+        document.querySelectorAll('.why-me-text p, .award-card, .timeline-item, .timeline-future').forEach((el) => {
+            observer.observe(el);
+        });
+
+        // Particles.js configuration
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffd700"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffd700",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+</body>
+</html>
