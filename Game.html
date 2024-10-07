@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Stock Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #2a2a2a;
+            padding: 10px 0;
+            text-align: center;
+            position: relative;
+        }
+        .home-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .widget {
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        .widget:hover {
+            transform: translateY(-5px);
+        }
+        .stock-list {
+            height: 400px;
+            overflow-y: auto;
+        }
+        .stock-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #3a3a3a;
+            transition: background-color 0.3s ease;
+        }
+        .stock-item:hover {
+            background-color: #3a3a3a;
+        }
+        .stock-item:last-child {
+            border-bottom: none;
+        }
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+        .trade-form {
+            display: grid;
+            gap: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #3a3a3a;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            color: #ffffff;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        .portfolio-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .portfolio-item {
+            background-color: #3a3a3a;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .news-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        .market-overview {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .market-index {
+            text-align: center;
+        }
+        .transaction-history {
+            height: 200px;
+            overflow-y: auto;
+        }
+        .transaction-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        .price-up {
+            color: #4CAF50;
+        }
+        .price-down {
+            color: #f44336;
+        }
+        .detailed-trade {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .detailed-trade > div {
+            display: flex;
+            flex-direction: column;
+        }
+        .detailed-trade label {
+            margin-bottom: 5px;
+        }
+        .detailed-trade input,
+        .detailed-trade select {
+            width: auto;
+        }
+        .risk-diversification {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .risk-diversification > div {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="home-icon"><i class="fas fa-home"></i></a>
+        <h1>Ultimate Stock Simulator</h1>
+    </header>
+    <div class="container">
+        <div class="market-overview">
+            <div class="market-index">
+                <h3>S&P 500</h3>
+                <p id="sp500">Loading...</p>
+            </div>
+            <div class="market-index">
+                <h3>NASDAQ</h3>
+                <p id="nasdaq">Loading...</p>
+            </div>
+            <div class="market-index">
+                <h3>Dow Jones</h3>
+                <p id="dowjones">Loading...</p>
+            </div>
+        </div>
+        <div class="dashboard">
+            <div class="widget">
+                <h2>Live Market</h2>
+                <div class="stock-list" id="live-market">
+                    <!-- Stock items will be dynamically added here -->
+                </div>
+            </div>
+            <div class="widget">
+                <h2>Portfolio Performance</h2>
+                <div class="portfolio-summary">
+                    <div class="portfolio-item">
+                        <h3>Total Value</h3>
+                        <p id="portfolio-value">$0.00</p>
+                    </div>
+                    <div class="portfolio-item">
+                        <h3>Day's Gain/Loss</h3>
+                        <p id="daily-change">$0.00 (0.00%)</p>
+                    </div>
+                    <div class="portfolio-item">
+                        <h3>Total Gain/Loss</h3>
+                        <p id="total-change">$0.00 (0.00%)</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="portfolio-chart"></canvas>
+                </div>
+                <div class="risk-diversification">
+                    <div>
+                        <h3>Risk Index</h3>
+                        <p id="risk-index">0.00</p>
+                    </div>
+                    <div>
+                        <h3>Diversification Rate</h3>
+                        <p id="diversification-rate">0.00%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="widget">
+                <h2>Stock Graph</h2>
+                <select id="stock-graph-select">
+                    <option value="">Select a stock</option>
+                </select>
+                <div class="chart-container">
+                    <canvas id="stock-chart"></canvas>
+                </div>
+            </div>
+            <div class="widget">
+                <h2>Quick Trade</h2>
+                <form class="trade-form">
+                    <div class="detailed-trade">
+                        <div>
+                            <label for="stock-select">Stock:</label>
+                            <select id="stock-select">
+                                <option value="">Select a stock</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="trade-type">Trade Type:</label>
+                            <select id="trade-type">
+                                <option value="buy">Buy</option>
+                                <option value="sell">Sell</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" placeholder="Quantity" min="1">
+                        </div>
+                        <div>
+                            <label for="order-type">Order Type:</label>
+                            <select id="order-type">
+                                <option value="market">Market Order</option>
+                                <option value="limit">Limit Order</option>
+                                <option value="stop">Stop Order</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="limit-price">Limit/Stop Price:</label>
+                            <input type="number" id="limit-price" placeholder="Price" step="0.01" disabled>
+                        </div>
+                    </div>
+                    <button type="button" onclick="simulateTrade()">Place Order</button>
+                </form>
+            </div>
+            <div class="widget">
+                <h2>Market News</h2>
+                <div id="market-news">
+                    <!-- News items will be dynamically added here -->
+                </div>
+            </div>
+            <div class="widget">
+                <h2>Transaction History</h2>
+                <div id="transaction-history" class="transaction-history">
+                    <!-- Transaction items will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stocks = [
+            {symbol: 'AAPL', name: 'Apple Inc.', price: 150.25, history: []},
+            {symbol: 'GOOGL', name: 'Alphabet Inc.', price: 2780.50, history: []},
+            {symbol: 'TSLA', name: 'Tesla, Inc.', price: 720.30, history: []},
+            {symbol: 'AMZN', name: 'Amazon.com, Inc.', price: 3300.75, history: []},
+            {symbol: 'MSFT', name: 'Microsoft Corporation', price: 305.60, history: []},
+            {symbol: 'FB', name: 'Meta Platforms, Inc.', price: 330.20, history: []},
+            {symbol: 'NFLX', name: 'Netflix, Inc.', price: 540.80, history: []},
+            {symbol: 'NVDA', name: 'NVIDIA Corporation', price: 220.45, history: []},
+            {symbol: 'JPM', name: 'JPMorgan Chase & Co.', price: 160.30, history: []},
+            {symbol: 'V', name: 'Visa Inc.', price: 230.15, history: []},
+            {symbol: 'JNJ', name: 'Johnson & Johnson', price: 170.50, history: []},
+            {symbol: 'WMT', name: 'Walmart Inc.', price: 140.80, history: []},
+            {symbol: 'PG', name: 'Procter & Gamble Co.', price: 135.20, history: []},
+            {symbol: 'DIS', name: 'The Walt Disney Company', price: 180.40, history: []},
+            {symbol: 'CSCO', name: 'Cisco Systems, Inc.', price: 55.70, history: []}
+        ];
+
+        const newsTemplates = [
+            '{COMPANY} Reports Strong Quarterly Earnings',
+            'Investors Bullish on {SECTOR} Stocks',
+            '{COMPANY} Announces New Product Launch',
+            'Market Reacts to Federal Reserve Decision',
+            'Trade Tensions Impact {SECTOR} Stocks',
+            '{COMPANY} CEO Steps Down',
+            'Analysts Upgrade {COMPANY} Stock',
+            'Economic Data Boosts {SECTOR} Sector',
+            '{COMPANY} Faces Regulatory Scrutiny',
+            'Merger Talks Between {COMPANY} and {COMPANY2} Underway'
+        ];
+
+        const sectors = ['Tech', 'Finance', 'Healthcare', 'Energy', 'Consumer Goods'];
+
+        let portfolio = [];
+        let transactions = [];
+        let cash = 100000; // Starting cash balance
+
+        function generateRandomNews() {
+            const news = [];
+            for (let i = 0; i < 5; i++) {
+                let template = newsTemplates[Math.floor(Math.random() * newsTemplates.length)];
+                template = template.replace('{COMPANY}', stocks[Math.floor(Math.random() * stocks.length)].name);
+                template = template.replace('{COMPANY2}', stocks[Math.floor(Math.random() * stocks.length)].name);
+                template = template.replace('{SECTOR}', sectors[Math.floor(Math.random() * sectors.length)]);
+                news.push(template);
+            }
+            return news;
+        }
+
+        function updateStockPrices() {
+            stocks.forEach(stock => {
+                const change = (Math.random() - 0.5) * 5;
+                stock.price = Math.max(0, stock.price + change);
+                stock.percentChange = (change / stock.price) * 100;
+                stock.history.push(stock.price);
+                if (stock.history.length > 100) {
+                    stock.history.shift();
+                }
+            });
+        }
+
+        function updateLiveMarket() {
+            const liveMarket = document.getElementById('live-market');
+            stocks.forEach(stock => {
+                let stockItem = document.getElementById(`stock-${stock.symbol}`);
+                if (!stockItem) {
+                    stockItem = document.createElement('div');
+                    stockItem.id = `stock-${stock.symbol}`;
+                    stockItem.className = 'stock-item';
+                    liveMarket.appendChild(stockItem);
+                }
+                const priceClass = stock.percentChange >= 0 ? 'price-up' : 'price-down';
+                stockItem.innerHTML = `
+                    <span>${stock.symbol} - ${stock.name}</span>
+                    <span class="${priceClass}">$${stock.price.toFixed(2)} (${stock.percentChange.toFixed(2)}%)</span>
+                `;
+            });
+        }
+
+        function updateStockSelect() {
+            const stockSelect = document.getElementById('stock-select');
+            const stockGraphSelect = document.getElementById('stock-graph-select');
+            stockSelect.innerHTML = '<option value="">Select a stock</option>';
+            stockGraphSelect.innerHTML = '<option value="">Select a stock</option>';
+            stocks.forEach(stock => {
+                const option = document.createElement('option');
+                option.value = stock.symbol;
+                option.textContent = `${stock.symbol} - ${stock.name}`;
+                stockSelect.appendChild(option.cloneNode(true));
+                stockGraphSelect.appendChild(option);
+            });
+        }
+
+        function updateNews() {
+            const marketNews = document.getElementById('market-news');
+            marketNews.innerHTML = '';
+            const news = generateRandomNews();
+            news.forEach(item => {
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-item';
+                newsItem.textContent = item;
+                marketNews.appendChild(newsItem);
+            });
+        }
+
+        function simulateTrade() {
+            const stockSymbol = document.getElementById('stock-select').value;
+            const tradeType = document.getElementById('trade-type').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const orderType = document.getElementById('order-type').value;
+            const limitPrice = parseFloat(document.getElementById('limit-price').value);
+
+            if (!stockSymbol || !quantity) {
+                alert('Please select a stock and enter a quantity.');
+                return;
+            }
+
+            const stock = stocks.find(s => s.symbol === stockSymbol);
+            let executionPrice = stock.price;
+
+            if (orderType !== 'market' && !limitPrice) {
+                alert('Please enter a limit/stop price for non-market orders.');
+                return;
+            }
+
+            if (orderType === 'limit') {
+                if ((tradeType === 'buy' && limitPrice < stock.price) || 
+                    (tradeType === 'sell' && limitPrice > stock.price)) {
+                    alert('Limit order not executed. Current price does not meet limit price.');
+                    return;
+                }
+                executionPrice = limitPrice;
+            } else if (orderType === 'stop') {
+                if ((tradeType === 'buy' && limitPrice > stock.price) || 
+                    (tradeType === 'sell' && limitPrice < stock.price)) {
+                    alert('Stop order not executed. Current price does not meet stop price.');
+                    return;
+                }
+                executionPrice = stock.price;
+            }
+
+            const totalValue = executionPrice * quantity;
+
+            if (tradeType === 'buy') {
+                if (totalValue > cash) {
+                    alert('Insufficient funds to complete this trade.');
+                    return;
+                }
+                cash -= totalValue;
+                const existingPosition = portfolio.find(p => p.symbol === stockSymbol);
+                if (existingPosition) {
+                    existingPosition.quantity += quantity;
+                    existingPosition.totalCost += totalValue;
+                } else {
+                    portfolio.push({
+                        symbol: stockSymbol,
+                        quantity: quantity,
+                        totalCost: totalValue
+                    });
+                }
+            } else { // sell
+                const position = portfolio.find(p => p.symbol === stockSymbol);
+                if (!position || position.quantity < quantity) {
+                    alert('Insufficient shares to complete this sale.');
+                    return;
+                }
+                position.quantity -= quantity;
+                if (position.quantity === 0) {
+                    portfolio = portfolio.filter(p => p.symbol !== stockSymbol);
+                }
+                cash += totalValue;
+            }
+
+            transactions.unshift({
+                type: tradeType === 'buy' ? 'Buy' : 'Sell',
+                symbol: stockSymbol,
+                quantity: quantity,
+                price: executionPrice,
+                total: totalValue,
+                date: new Date()
+            });
+
+            updatePortfolio();
+            updateTransactionHistory();
+
+            alert(`Trade executed!\n${tradeType === 'buy' ? 'Bought' : 'Sold'} ${quantity} shares of ${stockSymbol} at $${executionPrice.toFixed(2)} per share.\nTotal ${tradeType === 'buy' ? 'cost' : 'proceeds'}: $${totalValue.toFixed(2)}`);
+        }
+
+        function updatePortfolio() {
+            let totalValue = cash;
+            let dailyChange = 0;
+            let totalChange = 0;
+
+            portfolio.forEach(position => {
+                const stock = stocks.find(s => s.symbol === position.symbol);
+                const currentValue = stock.price * position.quantity;
+                totalValue += currentValue;
+                
+                const dailyChangeForPosition = (stock.price - stock.history[stock.history.length - 2]) * position.quantity;
+                dailyChange += dailyChangeForPosition;
+                
+                const totalChangeForPosition = currentValue - position.totalCost;
+                totalChange += totalChangeForPosition;
+            });
+
+            document.getElementById('portfolio-value').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('daily-change').textContent = `$${dailyChange.toFixed(2)} (${((dailyChange / totalValue) * 100).toFixed(2)}%)`;
+            document.getElementById('total-change').textContent = `$${totalChange.toFixed(2)} (${((totalChange / totalValue) * 100).toFixed(2)}%)`;
+
+            updateRiskAndDiversification();
+        }
+
+        function updateRiskAndDiversification() {
+            const totalValue = parseFloat(document.getElementById('portfolio-value').textContent.replace('$', ''));
+            const riskIndex = Math.random() * 10; // Simplified risk calculation
+            const diversificationRate = (portfolio.length / stocks.length) * 100;
+
+            document.getElementById('risk-index').textContent = riskIndex.toFixed(2);
+            document.getElementById('diversification-rate').textContent = `${diversificationRate.toFixed(2)}%`;
+        }
+
+        function updateTransactionHistory() {
+            const historyContainer = document.getElementById('transaction-history');
+            historyContainer.innerHTML = '';
+            transactions.forEach(transaction => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item';
+                transactionItem.innerHTML = `
+                    <p>${transaction.type} ${transaction.quantity} ${transaction.symbol} @ $${transaction.price.toFixed(2)}</p>
+                    <p>Total: $${transaction.total.toFixed(2)} | Date: ${transaction.date.toLocaleString()}</p>
+                `;
+                historyContainer.appendChild(transactionItem);
+            });
+        }
+
+        function updateMarketOverview() {
+            document.getElementById('sp500').textContent = `${(Math.random() * 1000 + 3000).toFixed(2)} (${(Math.random() * 2 - 1).toFixed(2)}%)`;
+            document.getElementById('nasdaq').textContent = `${(Math.random() * 2000 + 10000).toFixed(2)} (${(Math.random() * 2 - 1).toFixed(2)}%)`;
+            document.getElementById('dowjones').textContent = `${(Math.random() * 5000 + 30000).toFixed(2)} (${(Math.random() * 2 - 1).toFixed(2)}%)`;
+        }
+
+        let portfolioChart, stockChart;
+
+        function initCharts() {
+            const portfolioCtx = document.getElementById('portfolio-chart').getContext('2d');
+            portfolioChart = new Chart(portfolioCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            const stockCtx = document.getElementById('stock-chart').getContext('2d');
+            stockChart = new Chart(stockCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Stock Price',
+                        data: [],
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function updateCharts() {
+            // Update portfolio chart
+            const portfolioValue = parseFloat(document.getElementById('portfolio-value').textContent.replace('$', ''));
+            portfolioChart.data.labels.push(new Date().toLocaleTimeString());
+            portfolioChart.data.datasets[0].data.push(portfolioValue);
+            if (portfolioChart.data.labels.length > 20) {
+                portfolioChart.data.labels.shift();
+                portfolioChart.data.datasets[0].data.shift();
+            }
+            portfolioChart.update();
+
+            // Update stock chart
+            const selectedStock = document.getElementById('stock-graph-select').value;
+            if (selectedStock) {
+                const stock = stocks.find(s => s.symbol === selectedStock);
+                stockChart.data.labels = stock.history.map((_, index) => index + 1);
+                stockChart.data.datasets[0].data = stock.history;
+                stockChart.update();
+            }
+        }
+
+        document.getElementById('order-type').addEventListener('change', function() {
+            const limitPriceInput = document.getElementById('limit-price');
+            limitPriceInput.disabled = this.value === 'market';
+        });
+
+        document.getElementById('stock-graph-select').addEventListener('change', function() {
+            const selectedStock = stocks.find(s => s.symbol === this.value);
+            if (selectedStock) {
+                stockChart.data.labels = selectedStock.history.map((_, index) => index + 1);
+                stockChart.data.datasets[0].data = selectedStock.history;
+                stockChart.update();
+            }
+        });
+
+        function updateSimulation() {
+            updateStockPrices();
+            updateLiveMarket();
+            updatePortfolio();
+            updateMarketOverview();
+            updateCharts();
+        }
+
+        initCharts();
+        updateNews();
+        updateStockSelect();
+        setInterval(updateSimulation, 5000); // Update every 5 seconds
+        setInterval(updateNews, 20000); // Update news every 30 seconds
+        updateSimulation(); // Initial update
+    </script>
+</body>
+</html>
