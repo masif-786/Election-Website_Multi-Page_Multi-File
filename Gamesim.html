@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Simulator Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Raleway:wght@300;400;700&display=swap');
+
+        :root {
+            --primary-color: #ffd700;
+            --secondary-color: #4a0e78;
+            --text-color: #ffffff;
+            --bg-color: #0a0a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(10, 10, 26, 0.8);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            top: 0;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .menu li {
+            margin-left: 30px;
+        }
+
+        .menu a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .menu a:hover {
+            color: var(--primary-color);
+        }
+
+        #newsSlider {
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 120px auto 20px; /* Add margin top to account for fixed header */
+            border-radius: 5px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #newsContent {
+            display: inline-block;
+            animation: scroll 10s linear infinite;
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .up {
+            color: green;
+        }
+
+        .down {
+            color: red;
+        }
+
+        #controls {
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        input, button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        #balance {
+            font-size: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .stock-list {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .show-stocks-btn {
+            display: inline-block;
+            margin: 20px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">Stock Simulator</div>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="Trivia.html">Trivia</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="newsSlider">
+        <div id="newsContent">
+            <span>Breaking News: Market trends show potential growth!</span>
+            <span>Stock prices fluctuate. Stay informed!</span>
+            <span>Invest wisely; volatility is the name of the game!</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="balance">Balance: $1000</div>
+        <div id="controls">
+            <input type="text" id="stockInput" placeholder="Stock Symbol">
+            <input type="number" id="amountInput" placeholder="Amount">
+            <button onclick="buyStock()">Buy</button>
+            <button onclick="sellStock()">Sell</button>
+            <button class="show-stocks-btn" onclick="toggleStockList()">Show Stocks</button>
+            <div class="stock-list" id="stockList">
+                <h3>Available Stocks</h3>
+                <ul id="stockListItems">
+                    <!-- Stock list items will be dynamically added here -->
+                </ul>
+            </div>
+        </div>
+        <table id="stocksTable">
+            <thead>
+                <tr>
+                    <th>Stock Symbol</th>
+                    <th>Price</th>
+                    <th>Trend</th>
+                    <th>Quantity</th>
+                    <th>Buy Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Stocks will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const stockPrices = {
+            AAPL: { price: 150, trend: 'up' },
+            GOOGL: { price: 2800, trend: 'up' },
+            AMZN: { price: 3400, trend: 'up' },
+            TSLA: { price: 700, trend: 'up' }
+        };
+
+        let balance = 1000;
+        const userStocks = {};
+
+        function updateBalance() {
+            document.getElementById('balance').innerText = `Balance: $${balance}`;
+        }
+
+        function buyStock() {
+            const stockSymbol = document.getElementById('stockInput').value.toUpperCase();
+            const amount = parseInt(document.getElementById('amountInput').value);
+
+            if (stockPrices[stockSymbol] && amount > 0) {
+                const totalCost = stockPrices[stockSymbol].price * amount;
+                if (totalCost > balance) {
+                    alert("Insufficient balance!");
+                    return;
+                }
+                balance -= totalCost;
+                userStocks[stockSymbol] = userStocks[stockSymbol] || { quantity: 0, buyPrice: stockPrices[stockSymbol].price };
+                userStocks[stockSymbol].quantity += amount;
+                userStocks[stockSymbol].buyPrice = stockPrices[stockSymbol].price; // Update buy price
+                updateStocksTable();
+                updateBalance();
+            } else {
+                alert("Invalid stock symbol or amount!");
+            }
+        }
+
+        function sellStock() {
+            const stockSymbol = document.getElementById('stockInput').value.toUpperCase();
+            const amount = parseInt(document.getElementById('amountInput').value);
+
+            if (userStocks[stockSymbol] && amount > 0 && userStocks[stockSymbol].quantity >= amount) {
+                const totalSale = stockPrices[stockSymbol].price * amount;
+                balance += totalSale;
+                userStocks[stockSymbol].quantity -= amount;
+                if (userStocks[stockSymbol].quantity === 0) {
+                    delete userStocks[stockSymbol];
+                }
+                updateStocksTable();
+                updateBalance();
+            } else {
+                alert("Invalid stock symbol or insufficient quantity!");
+            }
+        }
+
+        function updateStocksTable() {
+            const tbody = document.querySelector('#stocksTable tbody');
+            tbody.innerHTML = '';
+            for (const stock in userStocks) {
+                const row = document.createElement('tr');
+                const trendClass = stockPrices[stock].trend === 'up' ? 'up' : 'down';
+                row.innerHTML = `
+                    <td>${stock}</td>
+                    <td>$${stockPrices[stock].price}</td>
+                    <td class="${trendClass}">${stockPrices[stock].trend === 'up' ? 'Up' : 'Down'}</td>
+                    <td>${userStocks[stock].quantity}</td>
+                    <td>$${userStocks[stock].buyPrice}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+
+        function updateStockPrices() {
+            for (const stock in stockPrices) {
+                const change = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * 10).toFixed(2);
+                stockPrices[stock].price = Math.max(0, (stockPrices[stock].price + parseFloat(change)).toFixed(2));
+                stockPrices[stock].trend = change > 0 ? 'up' : 'down';
+            }
+            updateStocksTable();
+            updateStockList();
+        }
+
+        function updateStockList() {
+            const stockListItems = document.getElementById('stockListItems');
+            stockListItems.innerHTML = '';
+            for (const stock in stockPrices) {
+                const listItem = document.createElement('li');
+                const trendClass = stockPrices[stock].trend === 'up' ? 'up' : 'down';
+                listItem.innerHTML = `
+                    <span>${stock}</span>
+                    <span>$${stockPrices[stock].price}</span>
+                    <span class="${trendClass}">${stockPrices[stock].trend === 'up' ? 'Up' : 'Down'}</span>
+                `;
+                stockListItems.appendChild(listItem);
+            }
+        }
+
+        function toggleStockList() {
+            const stockList = document.getElementById('stockList');
+            stockList.style.display = stockList.style.display === 'none' || stockList.style.display === '' ? 'inline-block' : 'none';
+        }
+
+        setInterval(updateStockPrices, 1500); // Update prices every  seconds
+    </script>
+</body>
+</html>
