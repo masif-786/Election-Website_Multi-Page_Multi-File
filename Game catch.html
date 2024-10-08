@@ -108,7 +108,7 @@
         }
 
         /* Start Button */
-        #startBtn, .mode-btn, .shop-btn {
+        #startBtn, .mode-btn, .shop-btn, #pauseBtn {
             padding: 10px 20px;
             background-color: #4a0e78;
             color: #fff;
@@ -120,7 +120,7 @@
             transition: background-color 0.3s, transform 0.3s;
         }
 
-        #startBtn:hover, .mode-btn:hover, .shop-btn:hover {
+        #startBtn:hover, .mode-btn:hover, .shop-btn:hover, #pauseBtn:hover {
             background-color: #5e1794;
             transform: scale(1.05);
         }
@@ -179,6 +179,16 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        /* Pause Button */
+        #pauseBtn {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -203,6 +213,9 @@
         <button class="shop-btn">Shop</button>
     </div>
 
+    <!-- Pause Button -->
+    <button id="pauseBtn">Pause</button>
+
     <!-- Shop -->
     <div id="shop">
         <h2>Shop</h2>
@@ -218,6 +231,7 @@
         let startBtn = document.getElementById('startBtn');
         let menuContainer = document.getElementById('menuContainer');
         let shop = document.getElementById('shop');
+        let pauseBtn = document.getElementById('pauseBtn');
         let score = 0;
         let gameInterval;
         let coinInterval;
@@ -227,12 +241,14 @@
         let gameMode = 'timed';
         let basketSize = 80;
         let coinSize = 40;
+        let isPaused = false;
 
         function startGame() {
             score = 0;
             scoreDisplay.textContent = "Score: " + score;
             gameOverDisplay.style.display = "none";
             menuContainer.style.display = "none";
+            pauseBtn.style.display = "block";
             
             document.addEventListener('keydown', keyDownHandler);
             document.addEventListener('keyup', keyUpHandler);
@@ -263,51 +279,58 @@
         }
 
         function moveBasket() {
-            let basketPosition = basket.offsetLeft;
+            if (!isPaused) {
+                let basketPosition = basket.offsetLeft;
+                let maxRight = window.innerWidth - basketSize;
 
-            if (movingLeft && basketPosition > 0) {
-                basket.style.left = basketPosition - basketSpeed + "px";
-            }
-            if (movingRight && basketPosition < (window.innerWidth - basketSize)) {
-                basket.style.left = basketPosition + basketSpeed + "px";
+                if (movingLeft && basketPosition > 0) {
+                    basket.style.left = Math.max(0, basketPosition - basketSpeed) + "px";
+                }
+                if (movingRight && basketPosition < maxRight) {
+                    basket.style.left = Math.min(maxRight, basketPosition + basketSpeed) + "px";
+                }
             }
 
             requestAnimationFrame(moveBasket);
         }
 
         function createCoin() {
-            let coin = document.createElement('div');
-            coin.classList.add('coin');
-            coin.style.left = Math.random() * (window.innerWidth - coinSize) + 'px';
-            coin.style.width = coinSize + 'px';
-            coin.style.height = coinSize + 'px';
-            document.body.appendChild(coin);
+            if (!isPaused) {
+                let coin = document.createElement('div');
+                coin.classList.add('coin');
+                coin.style.left = Math.random() * (window.innerWidth - coinSize) + 'px';
+                coin.style.width = coinSize + 'px';
+                coin.style.height = coinSize + 'px';
+                document.body.appendChild(coin);
 
-            let fallDuration = Math.random() * 2 + 1;
-            coin.style.animationDuration = fallDuration + 's, 1s';
+                let fallDuration = Math.random() * 2 + 1;
+                coin.style.animationDuration = fallDuration + 's, 1s';
 
-            let coinFall = setInterval(() => {
-                let coinTop = coin.getBoundingClientRect().top;
-                let basketRect = basket.getBoundingClientRect();
-                let coinRect = coin.getBoundingClientRect();
+                let coinFall = setInterval(() => {
+                    if (!isPaused) {
+                        let coinTop = coin.getBoundingClientRect().top;
+                        let basketRect = basket.getBoundingClientRect();
+                        let coinRect = coin.getBoundingClientRect();
 
-                if (
-                    coinTop + coinSize >= basketRect.top &&
-                    coinRect.left < basketRect.right &&
-                    coinRect.right > basketRect.left
-                ) {
-                    score += 10;
-                    scoreDisplay.textContent = "Score: " + score;
-                    createSparkle(coinRect.left + coinSize/2, coinRect.top + coinSize/2);
-                    coin.remove();
-                    clearInterval(coinFall);
-                }
+                        if (
+                            coinTop + coinSize >= basketRect.top &&
+                            coinRect.left < basketRect.right &&
+                            coinRect.right > basketRect.left
+                        ) {
+                            score += 10;
+                            scoreDisplay.textContent = "Score: " + score;
+                            createSparkle(coinRect.left + coinSize/2, coinRect.top + coinSize/2);
+                            coin.remove();
+                            clearInterval(coinFall);
+                        }
 
-                if (coinTop > window.innerHeight) {
-                    coin.remove();
-                    clearInterval(coinFall);
-                }
-            }, 20);
+                        if (coinTop > window.innerHeight) {
+                            coin.remove();
+                            clearInterval(coinFall);
+                        }
+                    }
+                }, 20);
+            }
         }
 
         function createSparkle(x, y) {
@@ -332,9 +355,21 @@
             gameOverDisplay.style.display = 'block';
             gameOverDisplay.classList.add('neon');
             menuContainer.style.display = 'block';
+            pauseBtn.style.display = 'none';
 
             let coins = document.querySelectorAll('.coin');
             coins.forEach(coin => coin.remove());
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            if (isPaused) {
+                pauseBtn.textContent = "Resume";
+                menuContainer.style.display = 'block';
+            } else {
+                pauseBtn.textContent = "Pause";
+                menuContainer.style.display = 'none';
+            }
         }
 
         startBtn.addEventListener('click', startGame);
@@ -374,6 +409,8 @@
                 }
             });
         });
+
+        pauseBtn.addEventListener('click', togglePause);
 
         window.onload = function() {
             menuContainer.style.display = 'block';
